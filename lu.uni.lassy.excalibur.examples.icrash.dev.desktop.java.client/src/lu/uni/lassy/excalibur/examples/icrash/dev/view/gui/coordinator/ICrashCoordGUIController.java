@@ -148,6 +148,10 @@ public class ICrashCoordGUIController extends AbstractAuthGUIController {
     @FXML
     private Button bttnCoordLogoff;
 
+    /** The button that runs the survey on the quality screen */ 
+    @FXML
+    private Button bttnCoordQR;
+    
     /**
      * Button event that deals with changing the status of a crisis
      *
@@ -228,12 +232,39 @@ public class ICrashCoordGUIController extends AbstractAuthGUIController {
     	validateAlert();
     }
     
+    /**
+     * Button event that runs the survey on the quality window
+     * 
+     * @param event The event type fired, we do not need it's details
+     */
+    @FXML
+    void bttnCoordQR_OnClick(ActionEvent event) {
+    	// TODO: open survey window
+    	new CreateQualitySurveyGUI(actor);
+//    	CreateICrashCoordGUI(coordID, systemstateController.getActCoordinator(txtfldUserName.getText())));
+//    	CreateQualitySurveyGUI(actor,)
+//    	userController.getAuth().getLogin();
+    	
+//    	JIntIsActor a = (JIntIsActor)userController.getAuth();
+//    	if (a instanceof ActCoordinator)
+//    		System.out.println("NOPE");
+////    	userController.getSe
+//    	ActCoordinator ac = (ActCoordinator)userController.getAuth();
+//    	try {
+//    		System.out.println(ac.getLogin().value.getValue());
+//    	} catch (Exception e) {
+//    		System.out.println("loh");
+//    	}
+    }
+    
     /*
      * These are other classes accessed by this controller
      */
 	
 	/** The user controller, for this GUI it's the coordinator controller and allows access to coordinator functions like reporting on crises. */
 	private CoordinatorController userController;
+	
+	private JIntIsActor actor;
 	
 	/*
 	 * Other things created for this controller
@@ -485,6 +516,7 @@ public class ICrashCoordGUIController extends AbstractAuthGUIController {
 	protected void logonShowPanes(boolean loggedOn){
 		tbpnMain.setVisible(loggedOn);
 		bttnCoordLogoff.setDisable(!loggedOn);
+		bttnCoordQR.setDisable(!loggedOn);
 		pnLogon.setVisible(!loggedOn);
 		bttnCoordLogon.setDefaultButton(!loggedOn);
 		if (loggedOn){
@@ -541,6 +573,7 @@ public class ICrashCoordGUIController extends AbstractAuthGUIController {
 
 	@Override
 	public PtBoolean setActor(JIntIsActor actor) {
+		this.actor = actor;
 		try { 
 			if (actor instanceof ActCoordinator)
 			{
