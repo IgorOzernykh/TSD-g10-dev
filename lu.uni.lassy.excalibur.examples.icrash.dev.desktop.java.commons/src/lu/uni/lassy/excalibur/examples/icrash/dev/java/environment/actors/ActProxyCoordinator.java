@@ -147,8 +147,8 @@ public interface ActProxyCoordinator extends ActProxyAuthenticated {
 	
 	/**
 	 * Sets the quality survey to be submitted.
-	 * @param aId TODO
-	 * @param aResult TODO
+	 * @param aId Id of a survey to submit
+	 * @param aResult the result of a survey to submit
 	 * @return The success of the method
 	 * @throws RemoteException Thrown if the server is offline 
 	 * @throws NotBoundException Thrown if the server has not been bound correctly in RMI settings

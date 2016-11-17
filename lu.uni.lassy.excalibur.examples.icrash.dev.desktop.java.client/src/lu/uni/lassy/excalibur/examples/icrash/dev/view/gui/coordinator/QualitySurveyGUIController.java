@@ -57,13 +57,20 @@ public class QualitySurveyGUIController extends AbstractGUIController {
 	
 	private HBox[] answerList;
 	
-	
+	/**
+     * Button event that submits the survey.
+     *
+     * @param event The event type fired, we do not need it's details
+     */
 	@FXML
 	void bttnQSSubmit_OnClick(ActionEvent event) {
 		submitQualitySurvey();
-	
+		closeForm();
 	}
 	
+	/**
+	 * Interprets the results of the quality survey and send an oeSubmitQualitySurvey to the system.
+	 */
 	private void submitQualitySurvey() {
 		StringBuilder sb = new StringBuilder();
 		for (HBox hBox : answerList) {
@@ -78,10 +85,9 @@ public class QualitySurveyGUIController extends AbstractGUIController {
 				}
 			}
 		}
-		System.out.println(sb.toString()); //TODO remove
 		try {
 			if (!userController.submitQualitySurvey("1", sb.toString()).getValue()) { //TODO ID!
-				showWarningMessage("Unable to submit survey", "Unable to submit survey, please try again");
+				showWarningMessage("Unable to submit the survey", "Unable to submit the survey, please try again");
 			}
 		} catch (ServerOfflineException | ServerNotBoundException e) {
 			showServerOffLineMessage(e);

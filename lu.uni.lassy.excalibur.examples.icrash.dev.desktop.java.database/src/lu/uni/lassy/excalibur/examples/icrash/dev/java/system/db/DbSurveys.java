@@ -12,11 +12,23 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtCoordinator;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtCrisis;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtQualitySurvey;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtComment;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtCoordinatorID;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtCrisisID;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtGPSLocation;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtLatitude;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtLogin;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtLongitude;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtPassword;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtSurveyID;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisStatus;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisType;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtDate;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtDateAndTime;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtTime;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.PtReal;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.PtString;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.utils.ICrashUtils;
 
@@ -187,6 +199,94 @@ public class DbSurveys extends DbAbstract {
 	}
 	
 	/**
+	 * Gets the associated surveys and the coordinators from the database.
+	 *
+	 * @return The hashtable of the surveys and coordinators, using the quality survey as a key
+	 */
+	static public Hashtable<CtQualitySurvey, CtCoordinator> getAssCtQualitySurveyCtCoordinator() {
+
+		Hashtable<CtQualitySurvey, CtCoordinator> assCtSurveyCtCoordinator = new Hashtable<CtQualitySurvey, CtCoordinator>();
+
+		try {
+			conn = DriverManager
+					.getConnection(url + dbName, userName, password);
+			log.debug("Connected to the database");
+
+			/********************/
+			//Select
+
+			try {
+				String sql = "SELECT * FROM " + dbName + ".surveys "
+						+ "INNER JOIN " + dbName + ".coordinators ON " + dbName
+						+ ".surveys.coordinator = " + dbName
+						+ ".coordinators.id";
+
+				PreparedStatement statement = conn.prepareStatement(sql);
+				ResultSet res = statement.executeQuery(sql);
+
+				CtQualitySurvey aCtSurvey = null;
+				CtCoordinator aCtCoordinator = null;
+
+				while (res.next()) {
+
+					aCtSurvey = new CtQualitySurvey();
+
+					//survey's id
+					DtSurveyID aId = new DtSurveyID(new PtString(
+							res.getString("id")));
+
+					//survey's result
+					String theType = res.getString("result");
+					
+					//survey's instant
+					Timestamp instant = res.getTimestamp("instant");
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(instant);
+
+					int d = cal.get(Calendar.DATE);
+					int m = cal.get(Calendar.MONTH);
+					int y = cal.get(Calendar.YEAR);
+					DtDate aDtDate = ICrashUtils.setDate(y, m, d);
+					int h = cal.get(Calendar.HOUR_OF_DAY);
+					int min = cal.get(Calendar.MINUTE);
+					int sec = cal.get(Calendar.SECOND);
+					DtTime aDtTime = ICrashUtils.setTime(h, min, sec);
+					DtDateAndTime aInstant = new DtDateAndTime(aDtDate, aDtTime);
+
+					
+					//*************************************
+					aCtCoordinator = new CtCoordinator();
+					//coordinator's id
+					DtCoordinatorID aId1 = new DtCoordinatorID(new PtString(
+							res.getString("coordiantor")));
+					//coordinator's login
+					DtLogin aLogin = new DtLogin(new PtString(
+							res.getString("login")));
+					//coordinator's pwd
+					DtPassword aPwd = new DtPassword(new PtString(
+							res.getString("pwd")));
+
+					aCtCoordinator.init(aId1, aLogin, aPwd);
+
+					//add instances to the hash
+					assCtSurveyCtCoordinator.put(aCtSurvey, aCtCoordinator);
+				}
+
+			} catch (SQLException s) {
+				log.error("SQL statement is not executed! " + s);
+			}
+			conn.close();
+			log.debug("Disconnected from database");
+
+		} catch (Exception e) {
+			logException(e);
+		}
+
+		return assCtSurveyCtCoordinator;
+
+	}
+	
+	/**
 	 * Binds a coordinator to a survey.
 	 *
 	 * @param aCtSurvey The survey to bind the coordinator to
@@ -203,7 +303,7 @@ public class DbSurveys extends DbAbstract {
 			//Update
 
 			try {
-				String sql = "UPDATE " + dbName
+				String sql = "UPDATE " 	+ dbName
 						+ ".surveys SET coordinator =? WHERE id = ?";
 				String id = aCtSurvey.id.value.getValue();
 				String coordinatorId = aCtCoordinator.id.value.getValue();

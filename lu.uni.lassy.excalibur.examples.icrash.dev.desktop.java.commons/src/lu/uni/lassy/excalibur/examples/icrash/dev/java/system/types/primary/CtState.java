@@ -54,7 +54,7 @@ public class CtState implements Serializable {
 	 *
 	 * @param aNextValueForAlertID The next index value available for the alert ID
 	 * @param aNextValueForCrisisID The next index value available for the crisis ID
-	 * @param aNextValueForQualitySurveyID TODO
+	 * @param aNextValueForQualitySurveyID The next index value avaliable for survey ID
 	 * @param aClock The current system date and time
 	 * @param aCrisisReminderPeriod The set crisis reminder period, if a crisis hasn't been handled within the period, coordinators will be warned.
 	 * @param aMaxCrisisReminderPeriod The max crisis reminder period, if a crisis hasn't been handled within the period, coordinators will be warned.

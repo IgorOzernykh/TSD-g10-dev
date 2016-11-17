@@ -17,6 +17,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -64,9 +65,14 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtHu
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.secondary.DtSMS;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtDate;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtDateAndTime;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtDay;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtHour;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtInteger;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtMinute;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtMonth;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtSecond;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtTime;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.DtYear;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.PtBoolean;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.PtInteger;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.PtString;
@@ -139,7 +145,7 @@ public class IcrashSystemImpl extends UnicastRemoteObject implements
 	Hashtable<CtHuman, ActComCompany> assCtHumanActComCompany = new Hashtable<CtHuman, ActComCompany>();
 	
 	/** A hashtable of the quality surveys in the system, stored by the coordinator as a key */
-	Hashtable<CtCoordinator, CtQualitySurvey> assCtSurveys = new Hashtable<CtCoordinator, CtQualitySurvey>();
+	Hashtable<CtQualitySurvey, CtCoordinator> assCtSurveys = new Hashtable<CtQualitySurvey, CtCoordinator>();
 	
 	/** The logger user by the system to print information to the console. */
 	private Logger log = Log4JUtils.getInstance().getLogger();
@@ -607,7 +613,7 @@ public class IcrashSystemImpl extends UnicastRemoteObject implements
 			cmpSystemCtAlert = DbAlerts.getSystemAlerts();
 			cmpSystemCtCrisis = DbCrises.getSystemCrises();
 			cmpSystemCtHuman = DbHumans.getSystemHumans();
-//			cmpSystemCtQualitySurvey = DbSurveys. TODO
+			cmpSystemCtQualitySurvey = DbSurveys.getSystemSurveys();
 			Hashtable<String, CtCoordinator> cmpSystemCtCoordinator = DbCoordinators.getSystemCoordinators();
 			for(CtCoordinator ctCoord: cmpSystemCtCoordinator.values()){
 				cmpSystemCtAuthenticated.put(ctCoord.login.value.getValue(), ctCoord);
@@ -620,6 +626,7 @@ public class IcrashSystemImpl extends UnicastRemoteObject implements
 			assCtAlertCtHuman = DbAlerts.getAssCtAlertCtHuman();
 			assCtCrisisCtCoordinator = DbCrises.getAssCtCrisisCtCoordinator();
 			assCtHumanActComCompany = DbHumans.getAssCtHumanActComCompany(env.getActComCompanies());
+			assCtSurveys = DbSurveys.getAssCtQualitySurveyCtCoordinator();
 			/*
 			*Creating a thread to auto check if handling delay has passed and if so run oeSollicitateCrisisHandling 
 			*/
@@ -839,48 +846,42 @@ public class IcrashSystemImpl extends UnicastRemoteObject implements
 			isUserLoggedIn();
 			if (currentRequestingAuthenticatedActor instanceof ActCoordinator) {
 				ActCoordinator theActCoordinator = (ActCoordinator) currentRequestingAuthenticatedActor;
-				// TODO: finish
+				// TODO: deal with the coord
+				System.currentTimeMillis();
+				Calendar cal = Calendar.getInstance();
+				int day = cal.get(Calendar.DAY_OF_MONTH);
+				int month = cal.get(Calendar.MONTH) + 1; 
+				int year = cal.get(Calendar.YEAR); 
+				
+				int hour = cal.get(Calendar.HOUR);
+				int min = cal.get(Calendar.MINUTE);
+				int sec = cal.get(Calendar.SECOND);
+				
+				DtDate aDate = new DtDate(new DtYear(new PtInteger(year)), 
+						new DtMonth(new PtInteger(month)), 
+						new DtDay(new PtInteger(day)));
+				
+				DtTime aTime = new DtTime(new DtHour(new PtInteger(hour)),
+						new DtMinute(new PtInteger(min)),
+						new DtSecond(new PtInteger(sec)));
+				
+				DtDateAndTime instant = new DtDateAndTime(aDate, aTime);
+				
 				int nextValueForSurveysID_at_pre = ctState.nextValueForSurveyID.value
-						.getValue(); // TODO: work with that
+						.getValue(); 
 				DtSurveyID acId = new DtSurveyID(new PtString("" + nextValueForSurveysID_at_pre));
 				ctState.nextValueForSurveyID.value = new PtInteger(ctState.nextValueForSurveyID.value.getValue() + 1);
 				
-				return new PtBoolean(true);
-				/*if (!existsNear) {
-				DtCrisisID acId = new DtCrisisID(new PtString(""
-						+ nextValueForCrisisID_at_pre));
-				ctState.nextValueForCrisisID.value = new PtInteger(
-						ctState.nextValueForCrisisID.value.getValue() + 1);
-				EtCrisisType acType = EtCrisisType.small;
-				EtCrisisStatus acStatus = EtCrisisStatus.pending;
-				DtComment acComment = new DtComment(new PtString(
-						"no report defined, yet"));
-				aCtCrisis.init(acId, acType, acStatus, aDtGPSLocation, aInstant,
-						acComment);
-	
-				//DB: insert crisis in the database
-				DbCrises.insertCrisis(aCtCrisis);
+				CtQualitySurvey theSurvey = new CtQualitySurvey();
+				theSurvey.init(acId, new PtString(aResult), instant);
 				
-				//update Messir composition
-				cmpSystemCtCrisis.put(aCtCrisis.id.value.getValue(), aCtCrisis);
-	
-			}*/
-				/*CtCrisis theCrisis = cmpSystemCtCrisis.get(aDtCrisisID.value
-					.getValue());
-			if (currentRequestingAuthenticatedActor instanceof ActCoordinator) {
-				ActCoordinator theActCoordinator = (ActCoordinator) currentRequestingAuthenticatedActor;
-				//PostF1
-				theCrisis.comment = aDtComment;
-				DbCrises.updateCrisis(theCrisis);
-				PtString aMessage = new PtString("The crisis comment has been updated !");
-				try {
-					theActCoordinator.ieMessage(aMessage);
-				} catch (RemoteException e) {
-					Log4JUtils.getInstance().getLogger().error(e);
-				}
-	
+				DbSurveys.insertQualitySurvey(theSurvey);
+				
+				PtString aMessage = new PtString("The survey with ID '"
+						+ theSurvey.id.value.getValue() + "' is added");
+				theActCoordinator.ieMessage(aMessage);
+				
 				return new PtBoolean(true);
-			}*/
 			}
 		} catch (Exception e) {
 			log.error("Exception in oeSubmitQualitySurvey..." + e);
