@@ -8,7 +8,7 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.PtBoolean;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.PtString;
 
 /**
- * A datatype class that stores Quality surveys 
+ * A class type that stores Quality surveys 
  */
 
 public class CtQualitySurvey implements Serializable, JIntIs {
