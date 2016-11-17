@@ -48,7 +48,30 @@ LOCK TABLES `alerts` WRITE;
 /*!40000 ALTER TABLE `alerts` ENABLE KEYS */;
 UNLOCK TABLES;
 
+--
+-- Table structure for table `surveys`
+--
 
+DROP TABLE IF EXISTS `surveys`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `surveys` (
+  `id` varchar(80) NOT NULL,
+  `result` varchar (200) NOT NULL,
+  `instant` datetime DEFAULT NULL,
+  `coordinator` varchar(80) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `surveys`
+--
+
+LOCK TABLES `surveys` WRITE;
+/*!40000 ALTER TABLE `surveys` DISABLE KEYS */;
+/*!40000 ALTER TABLE `surveys` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `crises`

@@ -25,6 +25,7 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.design.JIntI
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtAlertID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtComment;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtCrisisID;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtSurveyID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtAlertStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.PtBoolean;
@@ -217,6 +218,33 @@ public class CoordinatorController extends AbstractUserController {
 		}
 		return new PtBoolean(false);
 	}
+	
+	/**
+	 * 
+	 * @param surveyID the survey id
+	 * @param result the result of a survey
+	 * @return Returns a PtBoolean of true if done successfully, otherwise will return a false
+	 * @throws ServerNotBoundException is only thrown when attempting to access a server which has no current binding. This shouldn't happen, but you never know!
+	 * @throws ServerOfflineException is an error that is thrown when the server is offline or not reachable
+	 * @throws IncorrectFormatException is thrown when a Dt information type does not match the is() method specified in the specification
+	 */
+	public PtBoolean submitQualitySurvey(String surveyID, String result) throws ServerNotBoundException, ServerOfflineException, IncorrectFormatException{
+		DtSurveyID aDtSurveyID = new DtSurveyID(new PtString(surveyID));
+		if (this.getUserType() == UserType.Coordinator) {
+			ActProxyCoordinator actCoord = (ActProxyCoordinator)this.getAuth();
+			try {
+				return actCoord.oeSubmitQualitySurvey(aDtSurveyID, result);
+			} catch (RemoteException e) {
+				Log4JUtils.getInstance().getLogger().error(e);
+				throw new ServerOfflineException();
+			} catch (NotBoundException e) {
+				Log4JUtils.getInstance().getLogger().error(e);
+				throw new ServerOfflineException();
+			}
+		}
+		return new PtBoolean(true);
+	}
+	
 	
 	/**
 	 * Gets a list of all crises from the server with the status type of the one provided

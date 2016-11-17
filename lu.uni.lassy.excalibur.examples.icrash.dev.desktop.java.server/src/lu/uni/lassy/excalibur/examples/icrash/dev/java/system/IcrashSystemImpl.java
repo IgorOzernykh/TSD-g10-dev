@@ -39,12 +39,14 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.db.DbComCompanies;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.db.DbCoordinators;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.db.DbCrises;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.db.DbHumans;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.db.DbSurveys;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtAdministrator;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtAlert;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtAuthenticated;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtCoordinator;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtCrisis;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtHuman;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtQualitySurvey;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtState;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtAlertID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtComment;
@@ -54,6 +56,7 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtGP
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtLogin;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtPassword;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtPhoneNumber;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtSurveyID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtAlertStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisType;
@@ -112,6 +115,9 @@ public class IcrashSystemImpl extends UnicastRemoteObject implements
 	
 	/**  A hashtable of the actor com companies in the system, stored by their name as a key. */
 	Hashtable<String, ActComCompany> cmpSystemActComCompany = new Hashtable<String, ActComCompany>();
+	
+	/** A hashtable of the surveys int he system, stored by their name as a key. */
+	Hashtable<String, CtQualitySurvey> cmpSystemCtQualitySurvey = new Hashtable<String, CtQualitySurvey>(); 
 
 	// Messir associations	
 	/**  A hashtable of the joint alerts and crises in the system, stored by their alert as a key. */
@@ -131,6 +137,9 @@ public class IcrashSystemImpl extends UnicastRemoteObject implements
 	
 	/**  A hashtable of the joint humans and Actor com companies in the system, stored by the human as a key. */
 	Hashtable<CtHuman, ActComCompany> assCtHumanActComCompany = new Hashtable<CtHuman, ActComCompany>();
+	
+	/** A hashtable of the quality surveys in the system, stored by the coordinator as a key */
+	Hashtable<CtCoordinator, CtQualitySurvey> assCtSurveys = new Hashtable<CtCoordinator, CtQualitySurvey>();
 	
 	/** The logger user by the system to print information to the console. */
 	private Logger log = Log4JUtils.getInstance().getLogger();
@@ -535,10 +544,12 @@ public class IcrashSystemImpl extends UnicastRemoteObject implements
 			int nextValueForCrisisID = DbCrises.getMaxCrisisID() + 1;
 			DtInteger aNextValueForCrisisID = new DtInteger(new PtInteger(
 					nextValueForCrisisID));
+			int nextValueForSurveyID = DbSurveys.getMaxSurveyID() + 1;
+			DtInteger aNextValueForSurveyID = new DtInteger(new PtInteger(nextValueForSurveyID));
 			PtBoolean aVpStarted = new PtBoolean(true);
-			ctState.init(aNextValueForAlertID, aNextValueForCrisisID, aClock,
-					aCrisisReminderPeriod, aMaxCrisisReminderPeriod, aClock,
-					aVpStarted);
+			ctState.init(aNextValueForAlertID, aNextValueForCrisisID, aNextValueForSurveyID,
+					aClock, aCrisisReminderPeriod, aMaxCrisisReminderPeriod,
+					aClock, aVpStarted);
 			/* ENV
 			PostF 2 the actMsrCreator actor instance is initiated (remember that since the
 			oeCreateSystemAndEnvironment is a special event, its role is to make consistent the post
@@ -596,6 +607,7 @@ public class IcrashSystemImpl extends UnicastRemoteObject implements
 			cmpSystemCtAlert = DbAlerts.getSystemAlerts();
 			cmpSystemCtCrisis = DbCrises.getSystemCrises();
 			cmpSystemCtHuman = DbHumans.getSystemHumans();
+//			cmpSystemCtQualitySurvey = DbSurveys. TODO
 			Hashtable<String, CtCoordinator> cmpSystemCtCoordinator = DbCoordinators.getSystemCoordinators();
 			for(CtCoordinator ctCoord: cmpSystemCtCoordinator.values()){
 				cmpSystemCtAuthenticated.put(ctCoord.login.value.getValue(), ctCoord);
@@ -819,6 +831,63 @@ public class IcrashSystemImpl extends UnicastRemoteObject implements
 		}
 		return new PtBoolean(false);
 	}
+	
+	@Override
+	public synchronized PtBoolean oeSubmitQualitySurvey(DtSurveyID aId, String aResult) throws RemoteException {
+		try {
+			isSystemStarted();
+			isUserLoggedIn();
+			if (currentRequestingAuthenticatedActor instanceof ActCoordinator) {
+				ActCoordinator theActCoordinator = (ActCoordinator) currentRequestingAuthenticatedActor;
+				// TODO: finish
+				int nextValueForSurveysID_at_pre = ctState.nextValueForSurveyID.value
+						.getValue(); // TODO: work with that
+				DtSurveyID acId = new DtSurveyID(new PtString("" + nextValueForSurveysID_at_pre));
+				ctState.nextValueForSurveyID.value = new PtInteger(ctState.nextValueForSurveyID.value.getValue() + 1);
+				
+				return new PtBoolean(true);
+				/*if (!existsNear) {
+				DtCrisisID acId = new DtCrisisID(new PtString(""
+						+ nextValueForCrisisID_at_pre));
+				ctState.nextValueForCrisisID.value = new PtInteger(
+						ctState.nextValueForCrisisID.value.getValue() + 1);
+				EtCrisisType acType = EtCrisisType.small;
+				EtCrisisStatus acStatus = EtCrisisStatus.pending;
+				DtComment acComment = new DtComment(new PtString(
+						"no report defined, yet"));
+				aCtCrisis.init(acId, acType, acStatus, aDtGPSLocation, aInstant,
+						acComment);
+	
+				//DB: insert crisis in the database
+				DbCrises.insertCrisis(aCtCrisis);
+				
+				//update Messir composition
+				cmpSystemCtCrisis.put(aCtCrisis.id.value.getValue(), aCtCrisis);
+	
+			}*/
+				/*CtCrisis theCrisis = cmpSystemCtCrisis.get(aDtCrisisID.value
+					.getValue());
+			if (currentRequestingAuthenticatedActor instanceof ActCoordinator) {
+				ActCoordinator theActCoordinator = (ActCoordinator) currentRequestingAuthenticatedActor;
+				//PostF1
+				theCrisis.comment = aDtComment;
+				DbCrises.updateCrisis(theCrisis);
+				PtString aMessage = new PtString("The crisis comment has been updated !");
+				try {
+					theActCoordinator.ieMessage(aMessage);
+				} catch (RemoteException e) {
+					Log4JUtils.getInstance().getLogger().error(e);
+				}
+	
+				return new PtBoolean(true);
+			}*/
+			}
+		} catch (Exception e) {
+			log.error("Exception in oeSubmitQualitySurvey..." + e);
+		}
+		return new PtBoolean(false);
+	}
+	
 	/* (non-Javadoc)
 	 * @see lu.uni.lassy.excalibur.examples.icrash.dev.java.system.IcrashSystem#oeSetCrisisType(lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtCrisisID, lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisType)
 	 */

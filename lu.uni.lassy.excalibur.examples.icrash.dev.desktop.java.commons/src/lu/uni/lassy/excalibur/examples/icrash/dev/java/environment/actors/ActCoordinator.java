@@ -20,6 +20,7 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtCr
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtAlertID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtComment;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtCrisisID;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtSurveyID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtAlertStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisType;
@@ -140,5 +141,16 @@ public interface ActCoordinator extends ActAuthenticated {
 	 * @throws RemoteException Thrown if the server is offline
 	 */
 	public PtBoolean ieSendAnAlert(CtAlert aCtAlert) throws RemoteException;
-
+	
+	/**
+	 * Sets the quality survey to be submitted by the coordinator.
+	 * @param aId The id of the survey to submit.
+	 * @param aResult The result of the survey to submit.
+	 * 
+	 * @return The success of the method
+	 * @throws RemoteException Thrown is the server is offline
+	 * @throws NotBoundException Thrown if the server has not been bound correctly in the RMI settings
+	 */
+	public PtBoolean oeSubmitQualitySurvey(DtSurveyID aId, String aResult) throws RemoteException, NotBoundException;
+	
 }

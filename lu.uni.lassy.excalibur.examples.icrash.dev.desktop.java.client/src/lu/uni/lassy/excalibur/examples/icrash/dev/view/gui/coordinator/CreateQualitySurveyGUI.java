@@ -8,33 +8,19 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import lu.uni.lassy.excalibur.examples.icrash.dev.controller.CoordinatorController;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.environment.actors.ActCoordinator;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.design.JIntIsActor;
-import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtCoordinatorID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.utils.Log4JUtils;
 import lu.uni.lassy.excalibur.examples.icrash.dev.view.gui.abstractgui.CreatedWindows;
 
 public class CreateQualitySurveyGUI implements CreatedWindows {
 	
 	private Stage stage;
-//	private DtCoordinatorID _aDtCoordinatorID;
-//
-//	public DtCoordinatorID getDtCoordinatorID() {
-//		return this._aDtCoordinatorID;
-//	}
-//
-//	public CreateQualitySurveyGUI(DtCoordinatorID aDtCoordinatorID, ActCoordinator aActCoordinator) {
-//		this._aDtCoordinatorID = aDtCoordinatorID;
-//		start(aActCoordinator);
-//	}
 	
 	public CreateQualitySurveyGUI(JIntIsActor actor) {
 		start((ActCoordinator)actor);
 	}
 	
-//	private void start(ActCoordinator aActCoordinator) {
-//	private void start(CoordinatorController userController) {
 	private void start(ActCoordinator aActCoordinator) {
 		try {
 			URL url = this.getClass().getResource("QualitySurveyGUI.fxml");

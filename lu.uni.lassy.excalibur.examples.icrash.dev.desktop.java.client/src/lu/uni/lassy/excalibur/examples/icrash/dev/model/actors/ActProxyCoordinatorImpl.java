@@ -20,9 +20,11 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.java.environment.actors.ActCoo
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.environment.actors.ActProxyCoordinator;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtAlert;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtCrisis;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtQualitySurvey;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtAlertID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtComment;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtCrisisID;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtSurveyID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtAlertStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisType;
@@ -191,6 +193,17 @@ public class ActProxyCoordinatorImpl extends ActProxyAuthenticatedImpl
 		return new PtBoolean(true);
 	}
 	
+	/* (non-Javadoc)
+	 * @see lu.uni.lassy.excalibur.examples.icrash.dev.java.environment.actors.ActProxyCoordinator#ieSendACrisis(lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtQualitySurvey)
+	 */
+	public PtBoolean oeSubmitQualitySurvey(DtSurveyID aId, String aResult) throws RemoteException, NotBoundException {
+		if (getServerSideActor() != null) {
+			return ((ActCoordinator) getServerSideActor())
+					.oeSubmitQualitySurvey(aId, aResult);
+		}
+		return new PtBoolean(false);
+	}
+	
 	/** The list of class type crises this user has retrieved from the server. */
 	private Hashtable<String, CtCrisis> _listOfCtCrisis = new Hashtable<String, CtCrisis>(); 
 	
@@ -204,6 +217,16 @@ public class ActProxyCoordinatorImpl extends ActProxyAuthenticatedImpl
 	/** The observable map of class type alerts this user has retrieved from the server. 
 	 * Being observable, listeners can be attached to it to force the an action once updated*/
 	public ObservableMap<String, CtAlert> MapOfCtAlerts = FXCollections.observableMap(_listOfCtAlerts);
+	
+	/** The list of quality surveys submitted by coordinators */
+	private Hashtable<String, CtQualitySurvey> _listOfDtQualitySurveys = new Hashtable<String, CtQualitySurvey>();
+	
+	/** The observable map of quality surveys.
+	 * Being observable, listeners can be attached to it to force the an action once updated */
+	public ObservableMap<String, CtQualitySurvey> MapOfDtQualitySurveys = FXCollections.observableMap(_listOfDtQualitySurveys);
+	
+	
+//	private List<String> _listOfQ 
 
 	/* (non-Javadoc)
 	 * @see lu.uni.lassy.excalibur.examples.icrash.dev.java.environment.actors.ActProxyCoordinator#ieSendAnAlert(lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtAlert)

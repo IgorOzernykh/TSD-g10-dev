@@ -36,6 +36,7 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtGP
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtLogin;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtPassword;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtPhoneNumber;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtSurveyID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtAlertStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisType;
@@ -273,6 +274,17 @@ public interface IcrashSystem extends Remote {
 	 * @throws RemoteException Thrown if the server is offline
 	 */
 	public PtBoolean oeSetCrisisStatus(DtCrisisID aDtCrisisID, EtCrisisStatus aEtCrisisStatus) throws RemoteException; 		
+	
+	/**
+	 * Submits the quality survey
+	 * @param aId The ID of the survey to add.
+	 * @param aResult The result of the survey as a string.
+	 * 
+	 * @return The success of the method
+	 * @throws RemoteException Thrown if the server is offline 
+	 */
+	
+	public PtBoolean oeSubmitQualitySurvey(DtSurveyID aId, String aResult) throws RemoteException;
 	
 	/**
 	 * Sets the current authenticating actor to be handling the crisis.

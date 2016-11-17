@@ -24,6 +24,7 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtAl
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtComment;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtCrisisID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtLogin;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtSurveyID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtAlertStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisStatus;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.EtCrisisType;
@@ -207,6 +208,28 @@ public class ActCoordinatorImpl extends ActAuthenticatedImpl implements ActCoord
 
 		return res;
 	}
+	
+
+	@Override
+	public PtBoolean oeSubmitQualitySurvey(DtSurveyID aId, String aResult) throws RemoteException, NotBoundException {
+		Logger log = Log4JUtils.getInstance().getLogger();
+
+		
+		Registry registry = LocateRegistry.getRegistry(RmiUtils.getInstance().getHost(), RmiUtils.getInstance().getPort());
+		
+		IcrashSystem iCrashSys_Server = (IcrashSystem)registry.lookup("iCrashServer");
+		
+		iCrashSys_Server.setCurrentRequestingAuthenticatedActor(this);
+		log.info("message ActCoordinator.oeSubmitQualitySurvey sent to the system");
+		
+		PtBoolean res = iCrashSys_Server.oeSubmitQualitySurvey(aId, aResult);
+		
+		if(res.getValue() == true)
+			log.info("operation oeSubmitQualitySurvey successfully executed by the system");
+
+
+		return res;
+	}
 
 	/* (non-Javadoc)
 	 * @see lu.uni.lassy.excalibur.examples.icrash.dev.java.environment.actors.ActCoordinator#oeReportOnCrisis(lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtCrisisID, lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtComment)
@@ -332,4 +355,5 @@ public class ActCoordinatorImpl extends ActAuthenticatedImpl implements ActCoord
 			log.info("operation oeGetAlertsSet successfully executed by the system");
 		return res;
 	}
+
 }
