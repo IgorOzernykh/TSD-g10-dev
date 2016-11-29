@@ -99,6 +99,10 @@ public class ICrashAdminGUIController extends AbstractAuthGUIController {
     /** The button that allows a user to logoff */
     @FXML
     private Button bttnAdminLogoff;
+    
+    /** The button that allows an admin to view survey results */
+    @FXML
+    private Button bttnAdminViewSurveyResults;
 
     /**
      * The button event that will show the controls for adding a coordinator
@@ -138,6 +142,16 @@ public class ICrashAdminGUIController extends AbstractAuthGUIController {
     @FXML
     void bttnTopLogoff_OnClick(ActionEvent event) {
     	logoff();
+    }
+    
+    /**
+     * The button that creates survey results screen
+     * 
+     * @param event The event type thrown, we do not need this, but it must be specified
+     */
+    @FXML
+    void bttnAdminViewSurveyResults_OnClick(ActionEvent event) {
+    	new CreateICrashAdminSRSGUI(actor);
     }
 
     /*
@@ -180,6 +194,7 @@ public class ICrashAdminGUIController extends AbstractAuthGUIController {
 		pnAdminLogon.setVisible(!loggedOn);
 		brdpnAdmin.setVisible(loggedOn);
 		bttnAdminLogoff.setDisable(!loggedOn);
+		bttnAdminViewSurveyResults.setDisable(!loggedOn);
 		bttnAdminLogin.setDefaultButton(!loggedOn);
 		if (!loggedOn){
 			txtfldAdminUserName.setText("");

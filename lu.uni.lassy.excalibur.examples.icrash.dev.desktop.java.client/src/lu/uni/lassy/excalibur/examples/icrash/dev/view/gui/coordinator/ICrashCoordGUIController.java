@@ -239,22 +239,7 @@ public class ICrashCoordGUIController extends AbstractAuthGUIController {
      */
     @FXML
     void bttnCoordQR_OnClick(ActionEvent event) {
-    	// TODO: open survey window
     	new CreateQualitySurveyGUI(actor);
-//    	CreateICrashCoordGUI(coordID, systemstateController.getActCoordinator(txtfldUserName.getText())));
-//    	CreateQualitySurveyGUI(actor,)
-//    	userController.getAuth().getLogin();
-    	
-//    	JIntIsActor a = (JIntIsActor)userController.getAuth();
-//    	if (a instanceof ActCoordinator)
-//    		System.out.println("NOPE");
-////    	userController.getSe
-//    	ActCoordinator ac = (ActCoordinator)userController.getAuth();
-//    	try {
-//    		System.out.println(ac.getLogin().value.getValue());
-//    	} catch (Exception e) {
-//    		System.out.println("loh");
-//    	}
     }
     
     /*
