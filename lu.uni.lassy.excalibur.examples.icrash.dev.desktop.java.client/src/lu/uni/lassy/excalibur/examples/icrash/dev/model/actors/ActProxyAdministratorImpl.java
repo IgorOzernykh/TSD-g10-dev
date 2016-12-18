@@ -14,8 +14,14 @@ package lu.uni.lassy.excalibur.examples.icrash.dev.model.actors;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import lu.uni.lassy.excalibur.examples.icrash.dev.java.environment.actors.ActAdministrator;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.environment.actors.ActAdministrator;import lu.uni.lassy.excalibur.examples.icrash.dev.java.environment.actors.ActAuthenticated;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.environment.actors.ActProxyAdministrator;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtCoordinator;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtQualitySurvey;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtCoordinatorID;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtLogin;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.DtPassword;
@@ -26,10 +32,21 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.model.Message.MessageType;
 
 import org.apache.log4j.Logger;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
+
 /**
  * The Class ActProxyAdministratorImpl, that implements the client side actor for the administrator.
  */
 public class ActProxyAdministratorImpl extends ActProxyAuthenticatedImpl implements ActProxyAdministrator {
+	
+	private Hashtable<DtCoordinatorID, List<CtQualitySurvey>> _listOfCtSurveys = new Hashtable<DtCoordinatorID, List<CtQualitySurvey>>();
+	
+	public Hashtable<DtCoordinatorID, List<CtQualitySurvey>> getListOfCtSurveys() throws RemoteException {
+		return _listOfCtSurveys;
+	}
+	
+	public ObservableMap<DtCoordinatorID, List<CtQualitySurvey>> MapOfSurveys = FXCollections.observableMap(_listOfCtSurveys);
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 227L;
@@ -63,6 +80,34 @@ public class ActProxyAdministratorImpl extends ActProxyAuthenticatedImpl impleme
 			return ((ActAdministrator) getServerSideActor()).oeDeleteCoordinator(aDtCoordinatorID);
 		else
 			return new PtBoolean(false);
+	}
+
+	@Override
+	public PtBoolean oeGetSurveys(DtCoordinatorID aDtCoordinatorID)
+			throws RemoteException, NotBoundException {
+		if (getServerSideActor() == null) return new PtBoolean(false);
+		MapOfSurveys.clear();
+		return ((ActAdministrator) getServerSideActor()).oeGetSurveys(aDtCoordinatorID);
+	}
+
+	
+
+	@Override
+	public PtBoolean ieSendASurvey(DtCoordinatorID aDtCoordinatorID, CtQualitySurvey aCtQualitySurvey) throws RemoteException {
+		Logger log = Log4JUtils.getInstance().getLogger();
+
+		log.info("message ActAdministrator.ieSendASurvey received from system");
+		log.info("survey id '" + aCtQualitySurvey.id.value.getValue() + "' "
+				+ " with result '" + aCtQualitySurvey.result.getValue());
+		listOfMessages.add(new Message(MessageType.ieSendASurvey, "Survey " + aCtQualitySurvey.id.value.getValue() + " was sent"));
+		if (this.MapOfSurveys.containsKey(aDtCoordinatorID)) {
+			this.MapOfSurveys.get(aDtCoordinatorID).add(aCtQualitySurvey);
+		} else {
+			List<CtQualitySurvey> surveys = new ArrayList<>();
+			surveys.add(aCtQualitySurvey);
+			this.MapOfSurveys.put(aDtCoordinatorID, surveys);
+		}
+		return new PtBoolean(true);
 	}
 
 	/* (non-Javadoc)
@@ -102,5 +147,12 @@ public class ActProxyAdministratorImpl extends ActProxyAuthenticatedImpl impleme
 	@Override
 	public PtBoolean oeLogout() throws RemoteException, NotBoundException {
 		return super.oeLogout();
+	}
+	
+	@Override
+	public List<CtCoordinator> getCoordinators() throws RemoteException, NotBoundException {
+		if (getServerSideActor() != null)
+			return ((ActAdministrator) getServerSideActor()).getCoordinators();
+		return null;
 	}
 }

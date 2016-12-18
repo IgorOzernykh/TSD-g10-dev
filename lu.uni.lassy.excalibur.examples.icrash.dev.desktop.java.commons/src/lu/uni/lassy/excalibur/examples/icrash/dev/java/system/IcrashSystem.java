@@ -287,6 +287,15 @@ public interface IcrashSystem extends Remote {
 	public PtBoolean oeSubmitQualitySurvey(DtSurveyID aId, String aResult) throws RemoteException;
 	
 	/**
+	 * Gets the surveys associated with the coordinator specified
+	 * 
+	 * @param aId The Id of coordinator to use in search
+	 * @return The success of the method
+	 * @throws RemoteException Thrown if the server is offline 
+	 */
+	public PtBoolean oeGetSurveys(DtCoordinatorID aId) throws RemoteException;
+
+	/**
 	 * Sets the current authenticating actor to be handling the crisis.
 	 *
 	 * @param aDtCrisisID The ID of the crisis to change
@@ -369,7 +378,7 @@ public interface IcrashSystem extends Remote {
 	 * @return The success of the method
 	 * @throws RemoteException Thrown if the server is offline
 	 */
-	public PtBoolean oeDeleteCoordinator(DtCoordinatorID aDtCoordinatorID) throws RemoteException; 
+	public PtBoolean oeDeleteCoordinator(DtCoordinatorID aDtCoordinatorID) throws RemoteException;
 	
 	/**
 	 * Runs the function of sollicitating crisis handling, if a crisis hasn't been handled with the delay, coordinators will be warned. If it passes max delax, it will be auto assigned out 

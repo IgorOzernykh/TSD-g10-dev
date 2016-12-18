@@ -15,6 +15,7 @@ package lu.uni.lassy.excalibur.examples.icrash.dev.controller;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
+import java.util.List;
 
 import lu.uni.lassy.excalibur.examples.icrash.dev.controller.exceptions.IncorrectFormatException;
 import lu.uni.lassy.excalibur.examples.icrash.dev.controller.exceptions.ServerNotBoundException;
@@ -29,6 +30,8 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.PtBoolean;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.PtString;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.utils.Log4JUtils;
 import lu.uni.lassy.excalibur.examples.icrash.dev.model.actors.ActProxyAdministratorImpl;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtCoordinator;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.CtQualitySurvey;
 
 /**
  * The Class AdminController, used to do functions that an admin can only do.
@@ -77,6 +80,45 @@ public class AdminController extends AbstractUserController {
 		}
 		return new PtBoolean(false);
 	}
+	
+	public List<CtCoordinator> getCoordinators() {
+		if (getUserType() != UserType.Admin) return null;
+		
+		ActProxyAdministratorImpl actAdmin = (ActProxyAdministratorImpl) getAuth();
+		try {
+			return actAdmin.getCoordinators();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public Hashtable<DtCoordinatorID, List<CtQualitySurvey>> getListOfCtSurveys() {
+		if (getUserType() != UserType.Admin) return null;
+		
+		ActProxyAdministratorImpl actAdmin = (ActProxyAdministratorImpl) getAuth();
+		try {
+			return actAdmin.getListOfCtSurveys();
+		} catch (RemoteException e) {
+			return null;
+		}
+	}
+	
+	public PtBoolean oeGetSurveys(String coordinatorID) throws ServerOfflineException, ServerNotBoundException, IncorrectFormatException {
+		if (getUserType() != UserType.Admin) return new PtBoolean(false);
+		
+		ActProxyAdministratorImpl actAdmin = (ActProxyAdministratorImpl) getAuth();
+		DtCoordinatorID aDtCoordinatorID = new DtCoordinatorID(new PtString(coordinatorID));
+		try {
+			return actAdmin.oeGetSurveys(aDtCoordinatorID);
+		} catch (RemoteException e) {
+			Log4JUtils.getInstance().getLogger().error(e);
+			throw new ServerOfflineException();
+		} catch (NotBoundException e) {
+			Log4JUtils.getInstance().getLogger().error(e);
+			throw new ServerNotBoundException();
+		}
+	}
+	
 	/**
 	 * If an administrator is logged in, will send a deleteCoordinator request to the server. If successful, it will return a PtBoolean of true
 	 * @param coordinatorID The ID of the coordinator to delete

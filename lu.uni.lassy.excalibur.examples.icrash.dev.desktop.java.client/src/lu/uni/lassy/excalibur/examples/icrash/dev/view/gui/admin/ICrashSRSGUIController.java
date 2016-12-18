@@ -3,8 +3,12 @@ package lu.uni.lassy.excalibur.examples.icrash.dev.view.gui.admin;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -15,6 +19,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lu.uni.lassy.excalibur.examples.icrash.dev.controller.AdminController;
 import lu.uni.lassy.excalibur.examples.icrash.dev.controller.CoordinatorController;
+import lu.uni.lassy.excalibur.examples.icrash.dev.controller.SystemStateController;
 import lu.uni.lassy.excalibur.examples.icrash.dev.controller.exceptions.IncorrectActorException;
 import lu.uni.lassy.excalibur.examples.icrash.dev.controller.exceptions.ServerNotBoundException;
 import lu.uni.lassy.excalibur.examples.icrash.dev.controller.exceptions.ServerOfflineException;
@@ -23,7 +28,9 @@ import lu.uni.lassy.excalibur.examples.icrash.dev.java.environment.actors.ActCoo
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.design.JIntIsActor;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.types.stdlib.PtBoolean;
 import lu.uni.lassy.excalibur.examples.icrash.dev.java.utils.Log4JUtils;
+import lu.uni.lassy.excalibur.examples.icrash.dev.model.Message;
 import lu.uni.lassy.excalibur.examples.icrash.dev.view.gui.abstractgui.AbstractGUIController;
+import lu.uni.lassy.excalibur.examples.icrash.dev.java.system.types.primary.*;
 
 public class ICrashSRSGUIController extends AbstractGUIController {
 	
@@ -60,6 +67,8 @@ public class ICrashSRSGUIController extends AbstractGUIController {
 	@FXML
 	Button bttnVisualize;
 	
+	Hashtable<DtCoordinatorID, List<CtQualitySurvey>> map;
+	
 	/**
 	 * Visualizes survey results
 	 * @param event The event type fired, we do not need it's details
@@ -72,14 +81,36 @@ public class ICrashSRSGUIController extends AbstractGUIController {
 	@Override
 	public void initialize(URL location, ResourceBundle resourceBundle) {
 		lvCoords.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		// TODO: fill the coords list with coordinators 
+		System.out.println("getCoordinatrs");
+		List<CtCoordinator> coords = userController.getCoordinators();
 		
+		System.out.println("Iterate");
+		for (CtCoordinator coord : coords) {
+			try {
+				System.out.println("oeGet");
+				userController.oeGetSurveys(coord.id.value.getValue());
+				System.out.println("map assignment");
+				map = userController.getListOfCtSurveys();
+			} catch (Exception e) {
+				
+			}
+		}
+		
+		for (DtCoordinatorID aId : map.keySet()) {
+			System.out.println("adding");
+			lvCoords.getItems().add("Coordinator " + aId);
+		}
 	}
 	
 	private void visualize() {
+		System.out.println("");
 //		TODO: visualize
 	}
 
+//	private void oeGetSurveys() {
+//		
+//	}
+	
 	@Override
 	public PtBoolean setActor(JIntIsActor actor) {
 		try {

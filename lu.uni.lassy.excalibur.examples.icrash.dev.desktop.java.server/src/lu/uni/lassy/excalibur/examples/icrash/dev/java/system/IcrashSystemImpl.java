@@ -21,7 +21,9 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
@@ -145,7 +147,7 @@ public class IcrashSystemImpl extends UnicastRemoteObject implements
 	Hashtable<CtHuman, ActComCompany> assCtHumanActComCompany = new Hashtable<CtHuman, ActComCompany>();
 	
 	/** A hashtable of the quality surveys in the system, stored by the coordinator as a key */
-	Hashtable<CtQualitySurvey, CtCoordinator> assCtSurveys = new Hashtable<CtQualitySurvey, CtCoordinator>();
+	Hashtable<CtCoordinator, CtQualitySurvey> assCtSurveys = new Hashtable<CtCoordinator, CtQualitySurvey>();
 	
 	/** The logger user by the system to print information to the console. */
 	private Logger log = Log4JUtils.getInstance().getLogger();
@@ -885,6 +887,30 @@ public class IcrashSystemImpl extends UnicastRemoteObject implements
 			}
 		} catch (Exception e) {
 			log.error("Exception in oeSubmitQualitySurvey..." + e);
+		}
+		return new PtBoolean(false);
+	}
+	
+	@Override
+	public synchronized PtBoolean oeGetSurveys(DtCoordinatorID aId) {
+		try { // TODO:
+			//PreP1
+			isSystemStarted();
+			//PreP2
+			isUserLoggedIn();
+			if (currentRequestingAuthenticatedActor instanceof ActAdministrator) {
+				ActAdministrator aActAdministrator = (ActAdministrator) currentRequestingAuthenticatedActor;
+
+				for (Map.Entry<CtCoordinator, CtQualitySurvey> entry : assCtSurveys.entrySet()) {
+					if (entry.getKey().id == aId) {
+						entry.getValue().isSentToAdministrator(aActAdministrator, aId);
+					}
+				}
+				return new PtBoolean(true);
+			}
+		}
+		catch (Exception e){
+			log.error("Exception in oeGetSurveys..." + e);
 		}
 		return new PtBoolean(false);
 	}

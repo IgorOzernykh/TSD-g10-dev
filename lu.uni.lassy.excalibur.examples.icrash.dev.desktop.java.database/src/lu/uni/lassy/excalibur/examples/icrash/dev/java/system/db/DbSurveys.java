@@ -203,9 +203,9 @@ public class DbSurveys extends DbAbstract {
 	 *
 	 * @return The hashtable of the surveys and coordinators, using the quality survey as a key
 	 */
-	static public Hashtable<CtQualitySurvey, CtCoordinator> getAssCtQualitySurveyCtCoordinator() {
+	static public Hashtable<CtCoordinator, CtQualitySurvey> getAssCtQualitySurveyCtCoordinator() {
 
-		Hashtable<CtQualitySurvey, CtCoordinator> assCtSurveyCtCoordinator = new Hashtable<CtQualitySurvey, CtCoordinator>();
+		Hashtable<CtCoordinator, CtQualitySurvey> assCtSurveyCtCoordinator = new Hashtable<CtCoordinator, CtQualitySurvey>();
 
 		try {
 			conn = DriverManager
@@ -234,9 +234,11 @@ public class DbSurveys extends DbAbstract {
 					//survey's id
 					DtSurveyID aId = new DtSurveyID(new PtString(
 							res.getString("id")));
+					aCtSurvey.id = aId;
 
 					//survey's result
-					String theType = res.getString("result");
+					String aResult = res.getString("result");
+					aCtSurvey.result = new PtString(aResult);
 					
 					//survey's instant
 					Timestamp instant = res.getTimestamp("instant");
@@ -252,7 +254,7 @@ public class DbSurveys extends DbAbstract {
 					int sec = cal.get(Calendar.SECOND);
 					DtTime aDtTime = ICrashUtils.setTime(h, min, sec);
 					DtDateAndTime aInstant = new DtDateAndTime(aDtDate, aDtTime);
-
+					aCtSurvey.instant = aInstant;
 					
 					//*************************************
 					aCtCoordinator = new CtCoordinator();
@@ -269,7 +271,7 @@ public class DbSurveys extends DbAbstract {
 					aCtCoordinator.init(aId1, aLogin, aPwd);
 
 					//add instances to the hash
-					assCtSurveyCtCoordinator.put(aCtSurvey, aCtCoordinator);
+					assCtSurveyCtCoordinator.put(aCtCoordinator, aCtSurvey);
 				}
 
 			} catch (SQLException s) {

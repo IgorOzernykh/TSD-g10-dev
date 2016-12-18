@@ -11,7 +11,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.51" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lu.uni.lassy.excalibur.examples.icrash.dev.view.gui.admin.ICrashSRSGUIController">
    <children>
       <BorderPane fx:id="pnRoot" prefHeight="500.0" prefWidth="600.0">
          <top>
@@ -33,7 +33,7 @@
                   <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Select coordinator(s):" />
-                        <ListView id="lvCoords" fx:id="lvCoord" prefHeight="200.0" prefWidth="200.0" />
+                        <ListView id="lvCoords" fx:id="lvCoords" prefHeight="200.0" prefWidth="200.0" />
                      </children>
                   </HBox>
                   <Button id="bttnVisualize" fx:id="bttnVisualize" disable="true" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Visualize">

@@ -32,12 +32,11 @@ public class CreateICrashAdminSRSGUI implements CreatedWindows {
 			stage.setScene(new Scene(root));
 			stage.show();
 			
-			
 			((ICrashSRSGUIController)loader.getController()).setActor(aActAdministrator);
 			((ICrashSRSGUIController)loader.getController()).setWindow(stage);
 			((ICrashSRSGUIController)loader.getController()).setStage(stage);
 			
-			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				
 				@Override
 				public void handle(WindowEvent event) {
@@ -46,7 +45,7 @@ public class CreateICrashAdminSRSGUI implements CreatedWindows {
 			});
 			
 		} catch (Exception e) {
-			Log4JUtils.getInstance().getLogger().error(e);
+			Log4JUtils.getInstance().getLogger().error(e + ": " + e.getMessage());
 		}
 	}
 	
